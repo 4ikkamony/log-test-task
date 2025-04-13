@@ -1,6 +1,7 @@
 # How To Run:
 
-#### Clone the project
+
+## Clone the repository
 ```sh
 git clone git@github.com:4ikkamony/log-test-task.git
 ```
@@ -8,15 +9,17 @@ git clone git@github.com:4ikkamony/log-test-task.git
 ```sh
 cd log-test-task
 ```
-## Now you have 2 options
 
 ### 1. Run with Docker Compose:
 
-#### [Optional] Use custom log file:
+#### Configure environment
+
 ```sh
 cp .env.sample .env
 ```
-By default, logs/app_2.log file is used.
+
+#### Set .log file to use
+By default, ```logs/app_2.log``` file is used.
 To use other file, put it in 'logs' folder, and specify its name in .env file
 ```sh
 LOG_FILE_NAME=app_2.log
@@ -48,18 +51,18 @@ windows:
 pip install -r requirements.txt
 ```
 
-  #### Task 1:
-  To run with default app_2.log file:
-  ```sh
-  python do_it_yourself.py
-  ```
-  Or specify path to your log file:
-  ```sh
-  python do_it_yourself.py path/to/file.log
-   ```
+## Run Task 1
+To run with default app_2.log file:
+```sh
+python do_it_yourself.py
+```
+Or specify path to your log file:
+```sh
+python do_it_yourself.py path/to/file
+ ```
 
-  #### Task 2:
-  Run the tests:
-  ```sh
-  pytest
-  ```
+## Run Task 2
+Run the tests:
+```sh
+pytest
+```
