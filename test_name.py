@@ -1,9 +1,29 @@
 from unittest.mock import MagicMock
 
 import pytest
+from pytest_mock import MockerFixture
 
 from scanner_handler import CheckQr
-from fakes import FakeDB
+
+
+@pytest.fixture
+def check_qr() -> CheckQr:
+    return CheckQr()
+
+
+@pytest.fixture
+def check_in_db_mock(mocker: MockerFixture) -> MagicMock:
+    return mocker.patch.object(CheckQr, "check_in_db", return_value=None)
+
+
+@pytest.fixture
+def send_error_mock(mocker: MockerFixture) -> MagicMock:
+    return mocker.patch.object(CheckQr, "send_error")
+
+
+@pytest.fixture
+def can_add_device_mock(mocker: MockerFixture) -> MagicMock:
+    return mocker.patch.object(CheckQr, "can_add_device")
 
 
 @pytest.mark.parametrize(
@@ -45,12 +65,11 @@ def test_qr_with_correct_len_present_in_db(
     send_error_mock: MagicMock,
     can_add_device_mock: MagicMock,
     check_qr: CheckQr,
-    db_fake: FakeDB,
     qr: str,
     expected_color: str,
     expected_message: str,
 ) -> None:
-    db_fake.add_qr(qr)
+    check_in_db_mock.return_value = True
 
     check_qr.check_scanned_device(qr)
 
@@ -99,11 +118,10 @@ def test_qr_with_wrong_len_present_in_db(
     send_error_mock: MagicMock,
     can_add_device_mock: MagicMock,
     check_qr: CheckQr,
-    db_fake,
     qr: str,
     expected_len_error: str,
 ) -> None:
-    db_fake.add_qr(qr)
+    check_in_db_mock.return_value = True
 
     check_qr.check_scanned_device(qr)
 

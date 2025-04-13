@@ -16,7 +16,7 @@ BASE_DIR = Path(__file__).resolve().parent
 
 DEFAULT_LOG_FILE_NAME = "app_2.log"
 
-DEFAULT_LOG_FILE_PATH = BASE_DIR / DEFAULT_LOG_FILE_NAME
+DEFAULT_LOG_FILE_PATH = BASE_DIR / "logs" / DEFAULT_LOG_FILE_NAME
 
 ERROR_MESSAGES = {
     0: "Battery device error",
