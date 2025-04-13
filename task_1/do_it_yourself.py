@@ -11,7 +11,7 @@ from tqdm import tqdm
 # can be used to stop reading file after a certain amount of lines
 LOOP_LIMIT: Optional[int] = None
 
-BASE_DIR = Path(__name__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent
 
 LOG_FILE_NAME = "app_2.log"
 
