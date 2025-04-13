@@ -1,0 +1,22 @@
+# Byte-compiled / optimized / DLL files
+**/__pycache__/
+**/*.py[cod]
+**/*.pytest_cache
+
+**/*.log
+
+.venv/
+
+.idea/
+
+.git
+.gitignore
+
+*.md
+
+Dockerfile
+docker-compose.yaml
+.dockerignore
+
+.env
+.env.sample

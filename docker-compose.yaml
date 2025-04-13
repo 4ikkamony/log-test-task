@@ -1,0 +1,12 @@
+services:
+  task_1:
+    build: .
+    env_file:
+      - .env
+    command: ["python", "do_it_yourself.py"]
+    volumes:
+      - ./logs:/usr/src/app/logs
+
+  task_2:
+    build: .
+    command: ["pytest"]
