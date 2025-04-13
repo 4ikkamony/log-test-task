@@ -19,9 +19,9 @@ LOG_FILE_NAME = "app_2.log"
 LOG_FILE_PATH = BASE_DIR / LOG_FILE_NAME
 
 ERROR_MESSAGES = {
-    1: "Battery device error",
-    2: "Temperature device error",
-    3: "Threshold central error",
+    0: "Battery device error",
+    1: "Temperature device error",
+    2: "Threshold central error",
 }
 
 # captures groups:
@@ -61,20 +61,16 @@ def get_error_messages(s_p_1: str, s_p_2: str) -> list[str]:
 
     pairs = [status_str[i:i + 2] for i in range(0, len(status_str), 2)]
 
-    # a flag is 4-th bit of binary representation of a pair(8 bit total)
-    flags: list[int] = [ ]
-
-    for pair in pairs:
-        b = bin(int(pair))[2:].zfill(8)
-        print("bin", b)
-        print("flag", int(b[4]))
-
-        flags.append(int(b[4]))
-
-    print(flags)
+    # a flag is 4-th bit from the right of binary representation of a pair(8 bit total)
+    flags: list[int] = [
+        int(
+            bin(int(pair))[2:].zfill(8)[4]
+        )
+        for pair in pairs
+    ]
 
     return [
-        ERROR_MESSAGES.get(i + 1, "Unknown error")
+        ERROR_MESSAGES.get(i, "Unknown error")
         for i, flag in enumerate(flags)
         if flag == 1
     ]
