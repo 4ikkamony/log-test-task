@@ -22,6 +22,7 @@ ERROR_MESSAGES = {
     0: "Battery device error",
     1: "Temperature device error",
     2: "Threshold central error",
+    3: "Unknown device error"
 }
 
 # captures groups:
@@ -46,6 +47,7 @@ LOG_PATTERN = (
 def parse_message(line: str) -> tuple[str, str, str, State]:
     """"Excract HANDLER, ID, S_P_1, S_P_2 and STATE form log line"""
     match = re.search(LOG_PATTERN, line)
+    print(match)
     device_id = str(match.group(1))
     s_p_1 = (match.group(2))
     s_p_2 = (match.group(3))
@@ -62,6 +64,7 @@ def get_error_messages(s_p_1: str, s_p_2: str) -> list[str]:
     pairs = [status_str[i:i + 2] for i in range(0, len(status_str), 2)]
 
     # a flag is 4-th bit from the right of binary representation of a pair(8 bit total)
+    print(status_str)
     flags: list[int] = [
         int(
             bin(int(pair))[2:].zfill(8)[4]
@@ -69,11 +72,13 @@ def get_error_messages(s_p_1: str, s_p_2: str) -> list[str]:
         for pair in pairs
     ]
 
-    return [
-        ERROR_MESSAGES.get(i, "Unknown error")
+    error_messages = [
+        ERROR_MESSAGES[i]
         for i, flag in enumerate(flags)
         if flag == 1
     ]
+
+    return error_messages if error_messages else [ERROR_MESSAGES[3]]
 
 
 def main(
