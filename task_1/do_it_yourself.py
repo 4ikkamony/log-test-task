@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 
 
@@ -12,6 +13,25 @@ ERROR_MESSAGES = {
     2: "Temperature device error",
     3: "Threshold central error",
 }
+
+# captures groups:
+#   1: HANDLER
+#   2: ID
+#   3: S_P_1
+#   4: S_P_2
+#   5: STATE
+LOG_PATTERN = (
+    r"'"
+      r"(BIG);" # HANDLER
+      r"-?[0-9]+;"
+      r"([0-9a-zA-Z]{6});" # ID
+      r"(?:[0-9]+;){3}"
+      r"(-?[0-9]{4});" # S_P_1
+      r"(?:-?[0-9]+;){6}"
+      r"(-?[0-9]{3});" # S_P_2
+      r"(?:-?[0-9]+;){3}"
+      r"(02|DD);" # STATE
+    r"'")
 
 
 def get_big_handler_success_count_by_device_id() -> dict:
@@ -29,5 +49,11 @@ def inspect_error_message(id, s_p_1, s_p_2):
     ...
 
 
+def main(filepath: str | Path = LOG_FILE_PATH):
+    """Orchestrate the rest of the functions"""
+    with open(filepath, "r") as log_file:
+        ...
+
+
 if __name__ == "__main__":
-    ...
+    main()
