@@ -1,3 +1,4 @@
+import sys
 import re
 from collections import defaultdict
 from dataclasses import dataclass
@@ -13,9 +14,9 @@ LOOP_LIMIT: Optional[int] = None
 
 BASE_DIR = Path(__file__).resolve().parent
 
-LOG_FILE_NAME = "app_2.log"
+DEFAULT_LOG_FILE_NAME = "app_2.log"
 
-LOG_FILE_PATH = BASE_DIR / LOG_FILE_NAME
+DEFAULT_LOG_FILE_PATH = BASE_DIR / DEFAULT_LOG_FILE_NAME
 
 ERROR_MESSAGES = {
     0: "Battery device error",
@@ -55,9 +56,9 @@ LOG_PATTERN = (
     r"-?[0-9]+;"
     r"([0-9a-zA-Z]{6});"  # ID
     r"(?:[0-9]+;){3}"
-    r"(-?[0-9]{4});"  # S_P_1
+    r"([0-9]{4});"  # S_P_1
     r"(?:-?[0-9]+;){6}"
-    r"(-?[0-9]{3});"  # S_P_2
+    r"([0-9]{3});"  # S_P_2
     r"(?:-?[0-9]+;){3}"
     r"(02|DD);"  # STATE
     r"'"
@@ -189,7 +190,7 @@ def _display_report(report: ReportDTO) -> None:
 
 
 def main(
-    filepath: str | Path = LOG_FILE_PATH,
+    filepath: str | Path,
     loop_limit: Optional[int] = LOOP_LIMIT,
     report_initializer: Callable[..., ReportDTO] = _init_report_dto,
 ) -> None:
@@ -201,4 +202,5 @@ def main(
 
 
 if __name__ == "__main__":
-    main()
+    filepath = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_LOG_FILE_PATH        
+    main(filepath)
