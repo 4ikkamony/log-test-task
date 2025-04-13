@@ -1,5 +1,6 @@
 # How To Run:
 
+## Clone the repository
 ```sh
 git clone git@github.com:4ikkamony/log-test-task.git
 ```
@@ -7,6 +8,21 @@ git clone git@github.com:4ikkamony/log-test-task.git
 ```sh
 cd log-test-task
 ```
+## 1. Run using Docker Compose
+
+```sh
+cp .env.sample .env
+```
+[Optional] Place your custom .log file into 'logs' folder
+and set its name to ```LOG_FILE_NAME``` variable in ```.env```
+By default, it is set to app_2.log
+
+### Run task_1 and task_2
+```sh
+docker compose up
+```
+
+## 2. Run locally
 
 ### Create and activate venv
 ```sh
@@ -28,18 +44,18 @@ windows:
 pip install -r requirements.txt
 ```
 
-  ## Task 1:
-  To run with default app_2.log file:
-  ```sh
-  python -m task_1.do_it_yourself
-  ```
-  Or specify path to your log file:
-  ```sh
-  python -m task_1.do_it_yourself path/to/file.log
-   ```
+## Run Task 1
+To run with default app_2.log file:
+```sh
+python do_it_yourself.py
+```
+Or specify path to your log file:
+```sh
+python do_it_yourself.py path/to/file
+ ```
 
-  ## Task 2:
-  Run the tests:
-  ```sh
-  pytest
-  ```
+## Run Task 2
+Run the tests:
+```sh
+pytest
+```
