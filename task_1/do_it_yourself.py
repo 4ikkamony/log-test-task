@@ -1,12 +1,15 @@
 import re
-from typing import Callable
+from typing import Callable, Optional
 from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 from enum import Enum
 
+from tqdm import tqdm
 
-LOOP_LIMIT = None
+
+# can be used to stop reading file after a certain amount of lines
+LOOP_LIMIT: Optional[int] = None
 
 BASE_DIR = Path(__name__).resolve().parent
 
@@ -20,6 +23,10 @@ ERROR_MESSAGES = {
     2: "Threshold central error",
     3: "Unknown device error"
 }
+
+
+class InvalidLogMessageError(Exception):
+    pass
 
 
 class State(Enum):
@@ -59,6 +66,10 @@ LOG_PATTERN = (
 def _parse_message(line: str) -> tuple[str, str, str, State]:
     """"Excract HANDLER, ID, S_P_1, S_P_2 and STATE form log line"""
     match = re.search(LOG_PATTERN, line)
+
+    if not match:
+        raise InvalidLogMessageError(f"Could not match {line}")
+
     device_id = str(match.group(1))
     s_p_1 = (match.group(2))
     s_p_2 = (match.group(3))
@@ -103,10 +114,12 @@ def _get_report_from_logs(
     loop_limit: int,
     report_initializer: Callable[..., ReportDTO],
 ) -> ReportDTO:
+    """Goes through file line by line and writes data into a ReportDTO object"""
+
     report = report_initializer()
 
     with open(filepath, "r") as log_file:
-        for i, line in enumerate(log_file):
+        for i, line in enumerate(tqdm(log_file, desc="Processing logs")):
             if loop_limit and i > loop_limit:
                 break
 
@@ -115,7 +128,11 @@ def _get_report_from_logs(
 
             report.total_big_count += 1
 
-            device_id, s_p_1, s_p_2, state = _parse_message(line)
+            try:
+                device_id, s_p_1, s_p_2, state = _parse_message(line)
+            except InvalidLogMessageError as exception:
+                print(exception)
+                continue
 
             if state == State.OK:
                 report.total_ok_count += 1
@@ -132,32 +149,37 @@ def _get_report_from_logs(
 
 
 def _display_report(report: ReportDTO) -> None:
+    print(f"{'=' * 36}Report{'=' * 36}")
+    print(f"Total 'BIG' messages     : {report.total_big_count}")
+    print(f"Successful messages   : {report.total_ok_count}")
+    print(f"Failed messages       : {report.total_failed_count}")
     print()
-    print("=" * 10)
-    print()
-    print(f"Total 'BIG' messages count: {report.total_big_count}")
-    print(f"Successful 'BIG' messages count: {report.total_ok_count}")
-    print(f"Failed 'BIG' messages count: {report.total_failed_count}")
-    print()
-    print("=" * 10)
-    print()
-    print("Errors per device:")
-    for device_id, error_messages in report.error_messages_by_device_id.items():
-        print(f"{device_id}: {", ".join(error_messages)}")
-    print()
-    print("=" * 10)
-    print()
-    print("Success messages count per device:")
-    for device_id, count in report.ok_counts_by_device_id.items():
-        print(f"{device_id}: {count}")
-    print()
-    print("=" * 10)
-    print()
+
+    if report.error_messages_by_device_id:
+        print("Errors per device:")
+        for device_id, error_messages in report.error_messages_by_device_id.items():
+            print(f"  {device_id}: {", ".join(error_messages)}")
+        print()
+
+    if report.ok_counts_by_device_id:
+        print("Success messages count per device:")
+        for device_id, count in report.ok_counts_by_device_id.items():
+            print(f"  {device_id}: {count}")
+        print()
+
+    print("=" * 36)
+    print(
+        f"TOTAL OK DEVICES: {len(report.ok_counts_by_device_id)}"
+        f" | "
+        f"TOTAL FAILED DEVICES: {len(report.error_messages_by_device_id)}"
+    )
+    print("=" * 36)
+
 
 def main(
     filepath: str | Path = LOG_FILE_PATH,
-    loop_limit: int = LOOP_LIMIT,
-    report_initializer: callable = _init_report_dto,
+    loop_limit: Optional[int] = LOOP_LIMIT,
+    report_initializer: Callable[..., ReportDTO] = _init_report_dto,
 ) -> None:
     report = _get_report_from_logs(
         filepath=filepath,
