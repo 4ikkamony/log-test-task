@@ -51,11 +51,11 @@ pip install -r requirements.txt
   #### Task 1:
   To run with default app_2.log file:
   ```sh
-  python -m task_1.do_it_yourself
+  python do_it_yourself.py
   ```
   Or specify path to your log file:
   ```sh
-  python -m task_1.do_it_yourself path/to/file.log
+  python do_it_yourself.py path/to/file.log
    ```
 
   #### Task 2:
